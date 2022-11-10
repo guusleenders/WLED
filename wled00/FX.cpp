@@ -4552,8 +4552,7 @@ uint16_t WS2812FX::mode_2DBlackHole() {            // By: Stepko https://editor.
 } // mode_2DBlackHole()
 
 uint16_t WS2812FX::mode_2DFireplace(void) {
-
-  if (millis() - SEGENV.step >= ((256-SEGMENT.speed) >>2)) {
+  if (millis() - SEGENV.step >= ((256-SEGMENT.speed))) {
     SEGENV.step = millis();
     // static byte *heat = (uint16_t *)dataStore;
 
@@ -4561,7 +4560,8 @@ uint16_t WS2812FX::mode_2DFireplace(void) {
     byte *heat = reinterpret_cast<byte*>(SEGENV.data);
     
     byte t;
-    for (uint16_t x = 0; x <= SEGMENT.width; x++) for(uint16_t y = 0; y <= SEGMENT.height; y++) {
+    for(uint16_t y = 0; y < SEGMENT.height-1; y++) for (uint16_t x = 0; x <= SEGMENT.width; x++)  {
+      //leds[XY(x, y)] = ColorFromPalette(currentPalette, 1, 255, LINEARBLEND);
       t = heat[XY(x,y+1)] << 1;
 			t += heat[XY(x,y)] >> 1;
 			t += (x ? heat[XY(x-1,y+1)] : heat[XY(SEGMENT.width - 1,y+1)]) >> 1;
@@ -4569,14 +4569,29 @@ uint16_t WS2812FX::mode_2DFireplace(void) {
 			t >>= 2;
 			heat[XY(x,y)] = t;
 
-      leds[XY(x,y)] = ColorFromPalette(currentPalette, 0, heat[XY(x,y)], LINEARBLEND);
+      leds[XY(x,y)] = ColorFromPalette(currentPalette, 1, (byte)constrain(2*t+pow(t,2.5),0,254), LINEARBLEND);
 			// setPixel(c, abs(r-7), CRGB((byte)constrain(2*t+pow(t,2.5),0,254),  (byte)constrain(2*t+pow(t,2.5),0,254)*0.4, (byte)0));
 
     }
+    for(uint16_t x = 0; x < SEGMENT.width; x++) {
+      t = (rand() > 0xB0) ? rand() & 0x0F : (heat[XY(x,SEGMENT.height-1)] ? heat[XY(x,SEGMENT.height-1)] - 1 : 0);
+      heat[XY(x,SEGMENT.height-1)] = t;
+      leds[XY(x,(SEGMENT.height - 1))] = ColorFromPalette(currentPalette, 0, (byte)constrain(3*t+pow(t,2.5),0,254), LINEARBLEND);
+      //setPixel(c, abs((MATRIX_HEIGHT - 1)-7), CRGB((byte)constrain(3*t+pow(t,2.5),0,254),  (byte)constrain(2*t+pow(t,2.5),0,254)*0.4, (byte)0));
+    }
   }
+  blur2d(leds, 2);
+  setPixels(leds);
   return FRAMETIME;
 } // mode_2DFireplace()
 
+uint16_t WS2812FX::mode_2DPattern(void) {
+  for(uint16_t y = 0; y < SEGMENT.height; y++) for (uint16_t x = 0; x <= SEGMENT.width; x++)  {
+    leds[XY(x,y)] = ColorFromPalette(currentPalette, map(y, 0, SEGMENT.height, 0, 255), 255, LINEARBLEND);
+  }
+  setPixels(leds);
+  return FRAMETIME;
+} // mode_2DPattern()
 
 ////////////////////////////
 //     2D Colored Bursts  //

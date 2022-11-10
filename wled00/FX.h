@@ -120,7 +120,7 @@
 #define IS_REVERSE      ((SEGMENT.options & REVERSE     ) == REVERSE     )
 #define IS_SELECTED     ((SEGMENT.options & SELECTED    ) == SELECTED    )
 
-#define MODE_COUNT 191// WLEDSR: First 128 for AC (incl reserved), rest for SR
+#define MODE_COUNT 192// WLEDSR: First 128 for AC (incl reserved), rest for SR
 
 #define FX_MODE_STATIC                   0
 #define FX_MODE_BLINK                    1
@@ -321,6 +321,7 @@
 #define FX_MODE_3DRIPPLES              188
 #define FX_MODE_3DSphereMove        189
 #define FX_MODE_2DFIREPLACE            190
+#define FX_MODE_2DPATTERN            191
 
 #define floatNull -32768 //WLEDSR Custom Effects
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -795,6 +796,7 @@ class WS2812FX {
       _mode[FX_MODE_3DRIPPLES]               = &WS2812FX::mode_3DRipples;
       _mode[FX_MODE_3DSphereMove]            = &WS2812FX::mode_3DSphereMove;
       _mode[FX_MODE_2DFIREPLACE]             = &WS2812FX::mode_2DFireplace;
+      _mode[FX_MODE_2DPATTERN]             = &WS2812FX::mode_2DPattern;
 
 #ifdef WLEDSR_LARGE
     // _mode[FX_MODE_2DPOOLNOISE]              = &WS2812FX::mode_2DPoolnoise; //code not in fx.cpp
@@ -1141,6 +1143,7 @@ class WS2812FX {
       mode_2DColoredBursts(void),
       mode_2DJulia(void),
       mode_2DFireplace(void), 
+      mode_2DPattern(void), 
       mode_customEffect(void),     //WLEDSR Custom Effects
       mode_3DRipples(void),
       mode_3DSphereMove(void);
@@ -1437,7 +1440,6 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "2D Squared Swirl@,,,,Blur;,,;!",
 "2D Fire2012@Speed;;",
 "2D DNA@Scroll speed,Blur;;!",
-"2D Fireplace@;!,!;!",
 "2D Matrix@Falling speed,Spawning rate,Trail,Custom color ☑;Spawn,Trail;",
 "2D Metaballs@;;",
 " ♫ Freqmap@Fade rate,Starting color;,!;!",
@@ -1474,7 +1476,9 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 " ♫ 2D Akemi@Color speed,Dance ☑;Head palette,Arms & Legs,Eyes & Mouth;Face palette",
 " ⚙️ Custom Effect@Speed,Intensity,Custom 1, Custom 2, Custom 3;!;!",
 "3D Ripples@Speed=128,Interval=128;!;!",
-"3D Sphere Move@Speed=128,Interval=128;!;!"
+"3D Sphere Move@Speed=128,Interval=128;!;!",
+"2D Fireplace@Speed;!;!",
+"2D Pattern@;;!"
 ])=====";
 
 //WLEDSR: second part (not SR specific, but in latest SR, not in AC (Pallettes added in WLEDSR from Retro Clown->END))
