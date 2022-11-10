@@ -120,7 +120,7 @@
 #define IS_REVERSE      ((SEGMENT.options & REVERSE     ) == REVERSE     )
 #define IS_SELECTED     ((SEGMENT.options & SELECTED    ) == SELECTED    )
 
-#define MODE_COUNT 190// WLEDSR: First 128 for AC (incl reserved), rest for SR
+#define MODE_COUNT 191// WLEDSR: First 128 for AC (incl reserved), rest for SR
 
 #define FX_MODE_STATIC                   0
 #define FX_MODE_BLINK                    1
@@ -320,6 +320,7 @@
 #define FX_MODE_CUSTOMEFFECT           187 //WLEDSR Custom Effects
 #define FX_MODE_3DRIPPLES              188
 #define FX_MODE_3DSphereMove        189
+#define FX_MODE_2DFIREPLACE            190
 
 #define floatNull -32768 //WLEDSR Custom Effects
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -792,7 +793,8 @@ class WS2812FX {
       _mode[FX_MODE_2DAKEMI]                 = &WS2812FX::mode_2DAkemi;
       _mode[FX_MODE_CUSTOMEFFECT]            = &WS2812FX::mode_customEffect; //WLEDSR Custom Effects
       _mode[FX_MODE_3DRIPPLES]               = &WS2812FX::mode_3DRipples;
-      _mode[FX_MODE_3DSphereMove]         = &WS2812FX::mode_3DSphereMove;
+      _mode[FX_MODE_3DSphereMove]            = &WS2812FX::mode_3DSphereMove;
+      _mode[FX_MODE_2DFIREPLACE]             = &WS2812FX::mode_2DFireplace;
 
 #ifdef WLEDSR_LARGE
     // _mode[FX_MODE_2DPOOLNOISE]              = &WS2812FX::mode_2DPoolnoise; //code not in fx.cpp
@@ -1138,6 +1140,7 @@ class WS2812FX {
       mode_2DDrift(void),
       mode_2DColoredBursts(void),
       mode_2DJulia(void),
+      mode_2DFireplace(void), 
       mode_customEffect(void),     //WLEDSR Custom Effects
       mode_3DRipples(void),
       mode_3DSphereMove(void);
@@ -1434,6 +1437,7 @@ const char JSON_mode_names[] PROGMEM = R"=====([
 "2D Squared Swirl@,,,,Blur;,,;!",
 "2D Fire2012@Speed;;",
 "2D DNA@Scroll speed,Blur;;!",
+"2D Fireplace@;!,!;!",
 "2D Matrix@Falling speed,Spawning rate,Trail,Custom color ☑;Spawn,Trail;",
 "2D Metaballs@;;",
 " ♫ Freqmap@Fade rate,Starting color;,!;!",

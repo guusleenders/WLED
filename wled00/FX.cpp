@@ -4551,6 +4551,32 @@ uint16_t WS2812FX::mode_2DBlackHole() {            // By: Stepko https://editor.
   return FRAMETIME;
 } // mode_2DBlackHole()
 
+uint16_t WS2812FX::mode_2DFireplace(void) {
+
+  if (millis() - SEGENV.step >= ((256-SEGMENT.speed) >>2)) {
+    SEGENV.step = millis();
+    // static byte *heat = (uint16_t *)dataStore;
+
+    if (!SEGENV.allocateData(sizeof(byte) * 4096)) return mode_static(); //allocation failed
+    byte *heat = reinterpret_cast<byte*>(SEGENV.data);
+    
+    byte t;
+    for (uint16_t x = 0; x <= SEGMENT.width; x++) for(uint16_t y = 0; y <= SEGMENT.height; y++) {
+      t = heat[XY(x,y+1)] << 1;
+			t += heat[XY(x,y)] >> 1;
+			t += (x ? heat[XY(x-1,y+1)] : heat[XY(SEGMENT.width - 1,y+1)]) >> 1;
+			t += (x == SEGMENT.width - 1 ? heat[XY(0,y+1)] : heat[XY(x+1,y+1)]) >> 1;
+			t >>= 2;
+			heat[XY(x,y)] = t;
+
+      leds[XY(x,y)] = ColorFromPalette(currentPalette, 0, heat[XY(x,y)], LINEARBLEND);
+			// setPixel(c, abs(r-7), CRGB((byte)constrain(2*t+pow(t,2.5),0,254),  (byte)constrain(2*t+pow(t,2.5),0,254)*0.4, (byte)0));
+
+    }
+  }
+  return FRAMETIME;
+} // mode_2DFireplace()
+
 
 ////////////////////////////
 //     2D Colored Bursts  //
@@ -6733,6 +6759,8 @@ uint16_t WS2812FX::mode_2DAkemi(void) {
 
   return FRAMETIME;
 } // mode_2DAkemi
+
+
 
 
 // 3D !!!!!!!!!!
